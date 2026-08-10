@@ -50,4 +50,12 @@ public class Order {
     public int getExecutedQuantity() {
         return originalQuantity - remainingQuantity;
     }
+
+    public double getPrice(){
+        return price;
+    }
+
+    public OrderSide getSide(){
+        return side;
+    }
 }
