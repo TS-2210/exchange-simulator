@@ -58,4 +58,20 @@ public class Order {
     public OrderSide getSide(){
         return side;
     }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public OrderType getType(){
+        return type;
+    }
+
+    public int getRemainingQuantity(){
+        return remainingQuantity;
+    }
 }
