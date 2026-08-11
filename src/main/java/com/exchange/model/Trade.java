@@ -1,46 +1,48 @@
 package com.exchange.model;
 
-public class Trade {
-    private final long buyOrderId;
-    private final long sellOrderId;
-    private final double price;
-    private final long quantity;
+import java.time.Instant;
+import java.util.UUID;
 
-    public Trade(long buyOrderId,
-                 long sellOrderId,
-                 double price,
-                 long quantity) {
-        this.buyOrderId = buyOrderId;
-        this.sellOrderId = sellOrderId;
+public class Trade {
+    private final UUID id;
+    private final UUID buyOrderId;
+    private final UUID sellOrderId;
+    private final String symbol;
+    private final double price;
+    private final int quantity;
+    private final Instant timestamp;
+    public Trade(
+            Order buyOrder,
+            Order sellOrder,
+            double price,
+            int quantity) {
+        this.id = UUID.randomUUID();
+        this.buyOrderId = buyOrder.getId();
+        this.sellOrderId = sellOrder.getId();
+        this.symbol = buyOrder.getSymbol();
         this.price = price;
         this.quantity = quantity;
+        this.timestamp = Instant.now();
     }
-
-    public long getBuyOrderId() {
+    public UUID getId() {
+        return id;
+    }
+    public UUID getBuyOrderId() {
         return buyOrderId;
     }
-
-    public long getSellOrderId() {
+    public UUID getSellOrderId() {
         return sellOrderId;
     }
-
+    public String getSymbol() {
+        return symbol;
+    }
     public double getPrice() {
         return price;
     }
-
-    public long getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
-
-    @Override
-    public String toString() {
-        return "TRADE -> BUY " +
-                buyOrderId +
-                " SELL " +
-                sellOrderId +
-                " PRICE=" +
-                price +
-                " QTY=" +
-                quantity; 
+    public Instant getTimestamp() {
+        return timestamp;
     }
 }
