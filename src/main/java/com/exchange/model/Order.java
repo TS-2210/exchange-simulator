@@ -15,6 +15,7 @@ public class Order {
     private final int originalQuantity;
     private int remainingQuantity;
     private final Instant timestamp;
+    private OrderStatus status;
     public Order(
             String traderId,
             String symbol,
@@ -34,6 +35,8 @@ public class Order {
         this.originalQuantity = quantity;
         this.remainingQuantity = quantity;
         this.timestamp = Instant.now();
+        this.status = OrderStatus.NEW;
+    
     }
 
     public void reduceQuantity(int amount) {
@@ -42,6 +45,12 @@ public class Order {
         if (amount > remainingQuantity)
             throw new IllegalArgumentException();
         remainingQuantity -= amount;
+        if (remainingQuantity == 0) {
+            status = OrderStatus.FILLED;
+        } 
+        else {
+            status = OrderStatus.PARTIALLY_FILLED;
+        }
     }
 
     public boolean isFilled() {
@@ -74,5 +83,20 @@ public class Order {
 
     public int getRemainingQuantity(){
         return remainingQuantity;
+    }
+
+    public void setRemainingQuantity(int remainingQty) {
+        if(remainingQty < 0 || remainingQty > originalQuantity){
+            throw new IllegalArgumentException("Remaining qty should be between 0 and original amount");
+        }
+        this.remainingQuantity= remainingQty;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 }

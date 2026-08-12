@@ -1,6 +1,7 @@
 package com.exchange.orderbook;
 import com.exchange.model.Order;
 import com.exchange.model.OrderSide;
+import com.exchange.model.OrderStatus;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
@@ -25,6 +26,10 @@ public class OrderBook {
         book.get(order.getPrice())
                 .addLast(order);
         ordersById.put(order.getId(), order);
+    }
+
+    public Order getOrder(UUID orderId) {
+        return ordersById.get(orderId);
     }
 
     public Order getBestBid() {
@@ -66,6 +71,8 @@ public class OrderBook {
     public boolean cancelOrder(UUID orderId) {
         Order order = ordersById.get(orderId);
         if (order == null) return false;
+        if (order.getStatus() == OrderStatus.FILLED)return false;
+        order.setStatus(OrderStatus.CANCELLED);
         removeOrder(order);
         return true;
     }

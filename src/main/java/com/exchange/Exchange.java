@@ -16,7 +16,7 @@ public class Exchange {
             throw new IllegalArgumentException("Ticker already registered: " + symbol);
         }
         OrderBook orderBook = new OrderBook();
-        MatchingEngine matchingEngine = new MatchingEngine(orderBook);
+        MatchingEngine matchingEngine = new MatchingEngine(orderBook, new com.exchange.event.EventBus());
         engines.put(symbol, matchingEngine);
     }
 

@@ -8,22 +8,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.math.BigDecimal;
+import java.util.concurrent.locks.ReentrantLock;
+import com.exchange.event.EventBus;
+import com.exchange.model.TradeEvent;
 public class MatchingEngine {
     private final OrderBook orderBook;
-
-    public MatchingEngine(OrderBook orderBook) {
+    private final ReentrantLock lock = new ReentrantLock();
+    private final EventBus eventBus;
+    public MatchingEngine(OrderBook orderBook, EventBus eventBus) {
         this.orderBook = orderBook;
+        this.eventBus = eventBus;
     }
 
     public List<Trade> submitOrder(Order incomingOrder) {
-        List<Trade> trades = new ArrayList<>();
-        if (incomingOrder.getType() == OrderType.MARKET) {
-            matchMarketOrder(incomingOrder, trades);
+        lock.lock();
+        try{
+            List<Trade> trades = new ArrayList<>();
+            if (incomingOrder.getType() == OrderType.MARKET) {
+                matchMarketOrder(incomingOrder, trades);
+            }
+            else {
+                matchLimitOrder(incomingOrder, trades);
+            }
+            return trades;
         }
-        else {
-            matchLimitOrder(incomingOrder, trades);
+        finally {
+            lock.unlock();
         }
-        return trades;
     }
 
     private void matchLimitOrder(Order incomingOrder, List<Trade> trades) {
@@ -64,6 +75,7 @@ public class MatchingEngine {
             sellOrder = incomingOrder;
         }
         Trade trade = new Trade(buyOrder, sellOrder, executionPrice, quantity);
+        eventBus.publish(new TradeEvent(trade));
         incomingOrder.reduceQuantity(quantity);
         restingOrder.reduceQuantity(quantity);
         trades.add(trade);
@@ -82,6 +94,25 @@ public class MatchingEngine {
         }
     }
     public boolean cancelOrder(UUID orderId) {
-        return orderBook.cancelOrder(orderId);
+        lock.lock();
+        try{
+            return orderBook.cancelOrder(orderId);
+    
+        }
+        finally{
+            lock.unlock();
+        }
+    }
+
+    public boolean changeAmount (UUID orderId, int newAmount) {
+        Order order = orderBook.getOrder(orderId);
+        if (order == null) {
+            return false;
+        }
+        if (newAmount <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+        order.setRemainingQuantity(newAmount);
+        return true;
     }
 }
