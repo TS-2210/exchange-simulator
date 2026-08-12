@@ -1,7 +1,9 @@
 package com.exchange.model;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
+import java.math.BigDecimal;
 
 public class Order {
     private final UUID id;
@@ -9,7 +11,7 @@ public class Order {
     private final String symbol;
     private final OrderSide side;
     private final OrderType type;
-    private final double price;
+    private final BigDecimal price;
     private final int originalQuantity;
     private int remainingQuantity;
     private final Instant timestamp;
@@ -18,12 +20,11 @@ public class Order {
             String symbol,
             OrderSide side,
             OrderType type,
-            double price,
+            BigDecimal price,
             int quantity) {
         if (quantity <= 0)
             throw new IllegalArgumentException("Quantity must be positive");
-        if (price < 0)
-            throw new IllegalArgumentException("Price cannot be negative");
+        if (price.compareTo(BigDecimal.ZERO) < 0) throw new IllegalArgumentException("Price cannot be negative");
         this.id = UUID.randomUUID();
         this.traderId = traderId;
         this.symbol = symbol;
@@ -51,7 +52,7 @@ public class Order {
         return originalQuantity - remainingQuantity;
     }
 
-    public double getPrice(){
+    public BigDecimal getPrice(){
         return price;
     }
 

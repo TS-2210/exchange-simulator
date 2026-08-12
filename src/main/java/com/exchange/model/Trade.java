@@ -2,19 +2,19 @@ package com.exchange.model;
 
 import java.time.Instant;
 import java.util.UUID;
-
+import java.math.BigDecimal;
 public class Trade {
+    private final BigDecimal price;
+    private final int quantity;
     private final UUID id;
     private final UUID buyOrderId;
     private final UUID sellOrderId;
     private final String symbol;
-    private final double price;
-    private final int quantity;
     private final Instant timestamp;
     public Trade(
             Order buyOrder,
             Order sellOrder,
-            double price,
+            BigDecimal price,
             int quantity) {
         this.id = UUID.randomUUID();
         this.buyOrderId = buyOrder.getId();
@@ -36,7 +36,7 @@ public class Trade {
     public String getSymbol() {
         return symbol;
     }
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
     public int getQuantity() {

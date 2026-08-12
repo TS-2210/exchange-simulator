@@ -6,6 +6,8 @@ import com.exchange.model.Trade;
 import com.exchange.orderbook.OrderBook;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.math.BigDecimal;
 public class MatchingEngine {
     private final OrderBook orderBook;
 
@@ -42,16 +44,16 @@ public class MatchingEngine {
 
     private boolean pricesCross(Order incomingOrder, Order oppositeOrder) {
         if (incomingOrder.getSide() == OrderSide.BUY) {
-            return incomingOrder.getPrice() >= oppositeOrder.getPrice();
+            return incomingOrder.getPrice().compareTo(oppositeOrder.getPrice()) >= 0;
         }
         else {
-            return incomingOrder.getPrice() <= oppositeOrder.getPrice();
+            return incomingOrder.getPrice().compareTo(oppositeOrder.getPrice()) <= 0;
         }
     }
 
     private void executeTrade(Order incomingOrder, Order restingOrder, List<Trade> trades) {
         int quantity = Math.min(incomingOrder.getRemainingQuantity(), restingOrder.getRemainingQuantity());
-        double executionPrice = restingOrder.getPrice();
+        BigDecimal executionPrice = restingOrder.getPrice();
         Order buyOrder;
         Order sellOrder;
         if (incomingOrder.getSide() == OrderSide.BUY) {
@@ -78,5 +80,8 @@ public class MatchingEngine {
             }
             executeTrade(incomingOrder, oppositeOrder, trades);
         }
+    }
+    public boolean cancelOrder(UUID orderId) {
+        return orderBook.cancelOrder(orderId);
     }
 }

@@ -6,6 +6,7 @@ import com.exchange.orderbook.OrderBook;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class Exchange {
     private final Map<String, MatchingEngine> engines = new HashMap<>();
@@ -25,5 +26,15 @@ public class Exchange {
             throw new IllegalArgumentException("Invalid ticker: " + order.getSymbol());
         }
         return engine.submitOrder(order);
+    }
+
+    public boolean cancelOrder(String symbol, UUID orderId) {
+        MatchingEngine engine = engines.get(symbol);
+        if (engine == null) {
+            throw new IllegalArgumentException(
+                    "Unknown ticker: " + symbol
+            );
+        }
+        return engine.cancelOrder(orderId);
     }
 }
